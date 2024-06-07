@@ -1,0 +1,27 @@
+function play(userChoice) {
+    const choices = ['sasso', 'carta', 'forbici'];
+    let computerChoice;
+
+    // Adjusting difficulty levels
+    const difficulty = document.getElementById('difficulty').value;
+    if (difficulty === 'easy') {
+        // Always select the option that beats the user's choice in easy mode
+        if (userChoice === 'sasso') computerChoice = 'forbici';
+        else if (userChoice === 'carta') computerChoice = 'sasso';
+        else computerChoice = 'carta';
+    } else if (difficulty === 'normal') {
+        // Select the user's choice or a random choice in normal mode
+        const randomIndex = Math.floor(Math.random() * 3);
+        computerChoice = choices[randomIndex];
+    } else if (difficulty === 'hard') {
+        // Always select the option that beats the user's choice in hard mode
+        if (userChoice === 'sasso') computerChoice = 'carta';
+        else if (userChoice === 'carta') computerChoice = 'forbici';
+        else computerChoice = 'sasso';
+    }
+
+    const result = getResult(userChoice, computerChoice);
+    const language = document.getElementById('language').value;
+    const texts = translations[language];
+    document.getElementById('result').textContent = `${texts[userChoice] || ''}. ${texts[computerChoice] || ''}. ${texts[result] || ''}`;
+}
