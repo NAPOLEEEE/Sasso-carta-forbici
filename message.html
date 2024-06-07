@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sasso, Carta, Forbici</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 2s;
+        }
+        .choices, .settings {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .choice, .setting {
+            margin: 0 10px;
+            cursor: pointer;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border: 2px solid white;
+            border-radius: 5px;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .choice:hover, .setting:hover {
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            animation: fadeIn 1s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .result {
+            animation: slideIn 1s;
+        }
+        .settings select {
+            padding: 5px;
+            margin: 0 10px;
+            font-size: 1em;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="title">Sasso, Carta, Forbici</h1>
+        <p id="instruction">Scegli una delle opzioni:</p>
+        <div class="choices">
+            <div class="choice" onclick="play('sasso')" id="rock">Sasso</div>
+            <div class="choice" onclick="play('carta')" id="paper">Carta</div>
+            <div class="choice" onclick="play('forbici')" id="scissors">Forbici</div>
+        </div>
+        <div class="result" id="result"></div>
+        <div class="settings">
+            <select id="language" onchange="changeLanguage()">
+                <option value="it">Italiano</option>
+                <option value="en">English</option>
+            </select>
+            <select id="difficulty">
+                <option value="easy">Facile</option>
+                <option value="normal">Normale</option>
+                <option value="hard">Difficile</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            it: {
+                title: 'Sasso, Carta, Forbici',
+                instruction: 'Scegli una delle opzioni:',
+                rock: 'Sasso',
+                paper: 'Carta',
+                scissors: 'Forbici',
+                draw: 'Pareggio!',
+                win: 'Hai vinto!',
+                lose: 'Hai perso!',
+                easy: 'Facile',
+                normal: 'Normale',
+                hard: 'Difficile'
+            },
+            en: {
+                title: 'Rock, Paper, Scissors',
+                instruction: 'Choose an option:',
+                rock: 'Rock',
+                paper: 'Paper',
+                scissors: 'Scissors',
+                draw: 'Draw!',
+                win: 'You win!',
+                lose: 'You lose!',
+                easy: 'Easy',
+                normal: 'Normal',
+                hard: 'Hard'
+            }
+        };
+
+        function changeLanguage() {
+            const language = document.getElementById('language').value;
+            const texts = translations[language];
+            document.getElementById('title').textContent = texts.title || '';
+            document.getElementById('instruction').textContent = texts.instruction || '';
+            document.getElementById('rock').textContent = texts.rock || '';
+            document.getElementById('paper').textContent = texts.paper || '';
+            document.getElementById('scissors').textContent = texts.scissors || '';
+            document.getElementById('difficulty').options[0].text = texts.easy || '';
+            document.getElementById('difficulty').options[1].text = texts.normal || '';
+            document.getElementById('difficulty').options[2].text = texts.hard || '';
+
+            const resultText = document.getElementById('result').textContent;
+            if (resultText) {
+                const parts = resultText.split('. ');
+                if (parts.length === 3) {
+                    const userPart = parts[0].split(' ')[0];
+                    const computerPart = parts[1].split(' ')[0];
+                    const resultPart = parts[2];
+                    let translatedResult = '';
+                    if (resultPart.includes(translations.it.win) || resultPart.includes(translations.en.win)) {
+                        translatedResult = texts.win;
+                    } else if (resultPart.includes(translations.it.lose) || resultPart.includes(translations.en.lose)) {
+                        translatedResult = texts.lose;
+                    } else {
+                        translatedResult = texts.draw;
+                    }
+                    document.getElementById('result').textContent = `${texts[userPart] || ''} ${texts[parts[0].split(' ')[1]] || ''}. ${texts[computerPart] || ''} ${texts[parts[1].split(' ')[1]] || ''}. ${translatedResult || ''}`;
+                }
+            }
+        }
+
+        function play(userChoice) {
+            const choices = ['sasso', 'carta', 'forbici'];
+            const computerChoice = choices[Math.floor(Math.random() * 3)];
+            const result = getResult(userChoice, computerChoice);
+            const language = document.getElementById('language').value;
+            const texts = translations[language];
+            document.getElementById('result').textContent = `${texts[userChoice] || ''}. ${texts[computerChoice] || ''}. ${texts[result] || ''}`;
+        }
+
+        function getResult(userChoice, computerChoice) {
+            if (userChoice === computerChoice) {
+                return 'draw';
+            }
+            if ((userChoice === 'sasso' && computerChoice === 'forbici') ||
+                (userChoice === 'carta' && computerChoice === 'sasso') ||
+                (userChoice === 'forbici' && computerChoice === 'carta')) {
+                return 'win';
+            }
+            return 'lose';
+        }
+    </script>
+</body>
+</html>
